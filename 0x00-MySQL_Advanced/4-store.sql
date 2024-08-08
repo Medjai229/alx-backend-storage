@@ -1,5 +1,6 @@
 -- Trigger to decrease the quantity of an item in the `items` table whenever a new order is inserted into the `orders` table.
 
+DROP TRIGGER IF EXISTS decrease_quantity
 DELIMITER $$
 
 CREATE TRIGGER decrease_quantity
