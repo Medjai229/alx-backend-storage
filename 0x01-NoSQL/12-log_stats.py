@@ -22,6 +22,7 @@ if __name__ == "__main__":
                                                        "path": "/status"})
 
     print(f'{number_of_logs} logs')
+    print('Methods:')
     print(f'\tmethod GET: {number_of_gets}')
     print(f'\tmethod PUT: {number_of_puts}')
     print(f'\tmethod PATCH: {number_of_patchs}')
