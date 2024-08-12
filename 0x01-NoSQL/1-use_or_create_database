@@ -1,2 +1,2 @@
-// This script creates or uses the database my_db
+// This script lists all databases in MongoDB
 use my_db
