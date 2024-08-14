@@ -54,7 +54,7 @@ def replay(method: Callable) -> None:
     cache = redis.Redis()
     calls = cache.get(name).decode('UTF-8')
 
-    print(f'{name} was called {calls} times')
+    print(f'{name} was called {calls} times:')
 
     inputs = cache.lrange(name + ":inputs", 0, -1)
     outputs = cache.lrange(name + ":outputs", 0, -1)
