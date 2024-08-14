@@ -1,46 +1,32 @@
 #!/usr/bin/env python3
-""" A python script that interacts with redis database """
+'''
+Caching request module
+'''
+
 import redis
 import requests
-from typing import Callable
 from functools import wraps
+from typing import Callable
 
 
-r = redis.Redis()
+def track_get_page(fn: Callable) -> Callable:
+    ''' Decorator for get_page '''
+    @wraps(fn)
+    def wrapper(url: str) -> str:
+        ''' wrapper function '''
+        client = redis.Redis()
+        client.incr(f'count:{url}')
+        cached_page = client.get(f'{url}')
+        if cached_page:
+            return cached_page.decode('utf-8')
+        response = fn(url)
+        client.set(f'{url}', response, 10)
+        return response
+    return wrapper
 
 
-def cache_with_count(method: Callable) -> Callable:
-    """
-    A decorator that caches the result of a given method and counts
-    the number of times the result is retrieved.
-    """
-
-    @wraps(method)
-    def invoker(url) -> str:
-        """
-        A wrapper function that caches the result of a given method
-        and counts the number of times the result is retrieved.
-        """
-
-        r.incr(f'count:{url}')
-        result = r.get(f'result:{url}')
-
-        if result:
-            return result.decode('UTF-8')
-
-        result = method(url)
-        r.set(f'count:{url}', 0)
-        r.setex(f'result:{url}', 10, result)
-
-        return result
-
-    return invoker
-
-
-@cache_with_count
+@track_get_page
 def get_page(url: str) -> str:
-    """
-    Retrieves the content of a webpage at a given URL.
-    """
-
-    return requests.get(url).text
+    ''' Function to get page '''
+    response = requests.get(url)
+    return response.text
